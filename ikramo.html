@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- 
+        =====================================================
+        PROJECT: The Secret Garden for Ikramo (Legendary Edition)
+        VERSION: 3.0.0 (Extended & Optimized)
+        DEVELOPER: Gemini AI (Custom build for Emad)
+        DESCRIPTION: A high-accuracy interactive web experience.
+        =====================================================
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>  -  حديقة تاعك 💖</title>
+    
+    <!-- Fonts Integration -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 
+           =========================================
+           1. نظام المتغيرات والأساسيات (Root Styles)
+           =========================================
+        */
+        :root {
+            --primary-pink: #ffcce6;
+            --deep-pink: #ff66aa;
+            --accent-gold: #ffd700;
+            --bg-dark: #000000;
+            --text-main: #444;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-custom: 0 15px 35px rgba(0, 0, 0, 0.2);
+            --font-cairo: 'Cairo', sans-serif;
+            --font-tajawal: 'Tajawal', sans-serif;
+            --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: var(--font-cairo);
+            color: white;
+        }
+
+        /* 
+           =========================================
+           2. شاشة البداية الاحترافية (Intro Screen)
+           =========================================
+        */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1.5s ease-in-out, visibility 1.5s;
+        }
+
+        .envelope-box {
+            position: relative;
+            width: 200px;
+            height: 140px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 50px rgba(255, 102, 170, 0.4);
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+
+        .envelope-box:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-top: 80px solid var(--deep-pink);
+            transform-origin: top;
+            transition: transform 0.8s ease;
+            z-index: 3;
+        }
+
+        .envelope-box.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-paper {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 180px;
+            height: 120px;
+            background: #fffafa;
+            z-index: 2;
+            transition: transform 0.8s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--deep-pink);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .envelope-box.open .envelope-paper {
+            transform: translateY(-50px);
+        }
+
+        .intro-btn {
+            margin-top: 60px;
+            padding: 18px 50px;
+            background: linear-gradient(45deg, var(--deep-pink), #ff99cc);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 102, 170, 0.4);
+            animation: pulse-animation 2s infinite;
+            transition: 0.3s;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 170, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(255, 102, 170, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 170, 0); }
+        }
+
+        /* 
+           =========================================
+           3. الحديقة المتفاعلة (Garden Core)
+           =========================================
+        */
+        #garden-master {
+            position: absolute;
+            inset: 0;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 2s ease;
+            background-size: cover;
+            background-position: center bottom;
+        }
+
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center bottom;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .day-layer {
+            background-image: url('Gemini_Generated_Image_et5o2ket5o2ket5o_3.jpg');
+            z-index: 1;
+        }
+
+        .night-layer {
+            background-image: url('Gemini_Generated_Image_4jvaw94jvaw94jva_3.jpg');
+            opacity: 0;
+            z-index: 2;
+        }
+
+        /* 
+           =========================================
+           4. واجهة المستخدم والأدوات (UI Controls)
+           =========================================
+        */
+        .ui-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .ui-btn {
+            width: 65px;
+            height: 65px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-custom);
+        }
+
+        .ui-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .music-label {
+            position: absolute;
+            right: 80px;
+            background: var(--deep-pink);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: 0.3s;
+        }
+
+        .ui-btn:hover .music-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 
+           =========================================
+           5. مناطق التفاعل المبرمجة بدقة (Hitboxes)
+           =========================================
+        */
+        .interactive-zone {
+            position: absolute;
+            cursor: pointer;
+            z-index: 50;
+            /* border: 1px solid rgba(255,255,255,0.2); /* تفعيل هذا السطر لرؤية المناطق أثناء البرمجة */
+        }
+
+        /* الحصان - طلب خاص */
+        #horse-zone {
+            top: 45%;
+            right: 18%;
+            width: 22%;
+            height: 35%;
+            border-radius: 50%;
+        }
+
+        /* صندوق البريد - كلمة السر */
+        #mailbox-zone {
+            top: 52%;
+            left: 15%;
+            width: 12%;
+            height: 20%;
+        }
+
+        /* حقل الزهور - رسائل عشوائية */
+        #flowers-zone {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 38%;
+        }
+
+        /* القمر - رسالة ليلية */
+        #moon-zone {
+            top: 5%;
+            left: 25%;
+            width: 45%;
+            height: 25%;
+            display: none;
+        }
+
+        /* 
+           =========================================
+           6. نظام الفقاعات المتطور (Smart Bubbles)
+           =========================================
+        */
+        .bubble-msg {
+            position: absolute;
+            background: white;
+            color: var(--deep-pink);
+            padding: 18px 28px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            z-index: 2000;
+            pointer-events: none;
+            max-width: 280px;
+            text-align: center;
+            line-height: 1.6;
+            border: 3px solid var(--primary-pink);
+            opacity: 0;
+            transform: translate(-50%, -100%) scale(0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .bubble-msg.active {
+            opacity: 1;
+            transform: translate(-50%, -120%) scale(1);
+        }
+
+        .bubble-msg::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        /* 
+           =========================================
+           7. النوافذ المنبثقة والرسائل الكبيرة (Modals)
+           =========================================
+        */
+        .modal-container {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 450px;
+            padding: 45px;
+            border-radius: 35px;
+            text-align: center;
+            border: 6px solid var(--primary-pink);
+            transform: scale(0.8);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--text-main);
+        }
+
+        .modal-container.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container.visible .modal-card {
+            transform: scale(1);
+        }
+
+        .password-field {
+            width: 100%;
+            padding: 18px;
+            margin: 25px 0;
+            border: 3px solid var(--primary-pink);
+            border-radius: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            font-family: var(--font-tajawal);
+            outline: none;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--deep-pink);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* 
+           =========================================
+           8. الجسيمات (Petals & Fireflies)
+           =========================================
+        */
+        .canvas-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .petal-shape {
+            background: #ffcce6;
+            border-radius: 15px 2px 15px 2px;
+            opacity: 0.8;
+            animation: drift linear infinite;
+        }
+
+        .firefly-shape {
+            width: 6px;
+            height: 6px;
+            background: #e0ffb3;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ccff33;
+            animation: flicker infinite alternate;
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes flicker {
+            from { opacity: 0.4; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* 
+           =========================================
+           9. التجاوب مع الجوال (Mobile Logic)
+           =========================================
+        */
+        @media (max-width: 600px) {
+            .modal-card { padding: 30px; }
+            .ui-btn { width: 55px; height: 55px; font-size: 1.5rem; }
+            .bubble-msg { font-size: 0.95rem; padding: 15px 22px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- [شاشة الظرف] -->
+    <div id="intro-overlay">
+        <div class="envelope-box" id="main-env" onclick="openMagic()">
+            <div class="envelope-flap"></div>
+            
+        </div>
+        <button class="intro-btn" onclick="openMagic()">  عبزي و تفهمي كلش ختيتي 💖</button>
+    </div>
+
+    <!-- [عالم الحديقة] -->
+    <div id="garden-master">
+        <div id="day-view" class="bg-layer day-layer"></div>
+        <div id="night-view" class="bg-layer night-layer"></div>
+        
+        <div id="particle-field" class="canvas-overlay"></div>
+
+        <!-- أزرار التحكم -->
+        <div class="ui-panel">
+            <div class="ui-btn" onclick="toggleCycle()" title="تغيير الوقت">
+                <span id="cycle-icon">🌙</span>
+            </div>
+            <div class="ui-btn" onclick="playIkramoSong()">
+                🎵
+                <span class="music-tag music-label">غنية ليك✨</span>
+            </div>
+            <div class="ui-btn" onclick="handleMusicToggle()" id="music-master-btn">🌸</div>
+        </div>
+
+        <!-- مناطق التفاعل -->
+        <div id="horse-zone" class="interactive-zone" onclick="onHorseClick(event)"></div>
+        <div id="mailbox-zone" class="interactive-zone" onclick="showPassModal()"></div>
+        <div id="flowers-zone" class="interactive-zone" onclick="onFlowersClick(event)"></div>
+        <div id="moon-zone" class="interactive-zone" onclick="onMoonClick(event)"></div>
+    </div>
+
+    <!-- [النوافذ] -->
+    <!-- نافذة كلمة السر -->
+    <div class="modal-container" id="pass-modal">
+        <div class="modal-card">
+            <h2 style="color:var(--deep-pink); font-size:1.8rem; margin-bottom:10px;">
+            <p>دخلي كلمة السر </p>
+            <input type="text" id="pass-input" class="password-field" placeholder="اكتبي هنا..." autocomplete="off">
+            <button class="confirm-btn" onclick="validateSecret()"> فتح رسالتك 💖</button>
+            <p style="margin-top: 20px; color:#aaa; cursor:pointer;" onclick="hideModals()">إغلاق</p>
+        </div>
+    </div>
+
+    <!-- نافذة الرسالة الكبرى -->
+    <div class="modal-container" id="message-modal">
+        <div class="modal-card" style="max-width: 550px;">
+            <h2 style="color:var(--deep-pink); margin-bottom:20px; font-weight:900;"></h2>رسالة بسيطة ✨</h2>
+            <div style="text-align:right; line-height:1.9; color:#444; font-size:1.05rem; max-height:45vh; overflow-y:auto; padding-left:10px;">
+            مانيش عارف منين نبدأ بصح حبيت نقولك حاجة من قلبي وبكل صدق
+
+الموقع هذا بسيط، بصح خدمتو غير على جالك  ماشي على خاطر حاجة كبيرة صرات بصح على جال نتي راكي فحياتي و وجودك يعنيلي كلشي يمكن دايمن نهدر بزاف ويمكن ما نعرفش نعبر مليح دايمن بصح الحاجة الوحيدة لي متأكد منها هي بلي أنتي شخص غالي بزاف عليا وماشي كيف الناس كامل نتي فوقهم كامل
+
+كاين ناس يجو ويمرو في حياتنا عادي وكاين ناس يخلو أثر يبقى  ونتي عندك نوع خاص فوقهم كامل لبنادم لي يدخل ما يخرجش من حياتي 
+
+حتى لو يومك يكون صعيب حتى لو كامل دنيا واقفة كونطرك حبيتك تتفكري بلي كاين بنادم
+
+يخمم فيك بلا ما يحبس و يخمم كيش يعاونك من قلبو 
+
+مانيش نطلب اي حاجة غير كي تقراي هدو الكلمات  حبيت غير تشوفي بلي ماكيش  وحدك وبلي تستاهلي كل خير وفرحة وراحة بال
+
+إذا هدا الشي  خلاك تبتسمي حتى لحظة صغيرةأنا هذا يكفيني    . . <br><br>
+         <br><br>
+                <b> ربي يخليك ولله نعزك 💖</b>
+            </div>
+            <button class="confirm-btn" style="margin-top:25px;" onclick="hideModals()"> ابقاي بليز 💖</button>
+        </div>
+    </div>
+
+    <!-- الأصوات -->
+    <audio id="bg-loop" loop src="Where_Lilies_Sleep_2.mp3"></audio>
+    <audio id="special-track" src="Ikramoo_in_Flight_3.mp3"></audio>
+
+    <script>
+        /* 
+           =========================================
+           10. منطق البرمجة (The Engine)
+           =========================================
+        */
+
+        const flowerQuotes = [
+            "ربي يخليك ليا يا إكرامو 🌷", "نعزك كثر من روحي 🌸", "نتي برفيكت بزاف 💐",
+            "ختيتي الحبوبة ربي يحفظك 🌹", "شابة بزاف تبارك الله 🌺", "Together Forever 🌺",
+            "أحلى حاجة صراتلي هي نتي 🌺", "عيون عمادو 🌺", "حياة عمادو 🌺",
+            "نتي أسطورة 🌺", "كيوتة بزاف 🌺", "حبوبتي ختيتييي 🌺","نبقى ديما معاك 🌹","يا أجمل إنسانة فحياتي 🌺"
+            ,"ربي يديمك ليا 🌷","نغليك أكثر من أي حاجة 🌸","نعيش غير باش نشوفك فرحانة 💖"
+            ,"يا زينة البنات 🌷","نتي أجمل حاجة صراتلي 🌸","إكرامو = السعادة 🌷","يا أجمل صدفة فحياتي 💐"
+            ,"وجودك فحياتي نعمة 🌺","نتي سبب فرحتي 🌷"
+        ];
+
+        let state = {
+            isNight: false,
+            musicPlaying: false,
+            isIntroFinished: false
+        };
+
+        const bgAudio = document.getElementById('bg-loop');
+        const spAudio = document.getElementById('special-track');
+
+        // دالة الدخول للعالم
+        function openMagic() {
+            document.getElementById('main-env').classList.add('open');
+            setTimeout(() => {
+                const intro = document.getElementById('intro-overlay');
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    const garden = document.getElementById('garden-master');
+                    garden.style.visibility = 'visible';
+                    garden.style.opacity = '1';
+                    state.isIntroFinished = true;
+                    bgAudio.play().catch(e => console.log("Audio ready"));
+                    state.musicPlaying = true;
+                    document.getElementById('music-master-btn').innerText = '⏸️';
+                    spawnParticles();
+                }, 1500);
+            }, 800);
+        }
+
+        // دالة إنشاء الفقاعات (Smart Logic لمنع الخروج عن الشاشة)
+        function spawnBubble(text, x, y) {
+            const b = document.createElement('div');
+            b.className = 'bubble-msg';
+            b.innerText = text;
+            document.body.appendChild(b);
+
+            const bRect = b.getBoundingClientRect();
+            const padding = 20;
+            let finalX = x;
+            let finalY = y;
+
+            // التأكد من عدم الخروج يميناً أو يساراً
+            if (finalX + bRect.width / 2 > window.innerWidth - padding) {
+                finalX = window.innerWidth - bRect.width / 2 - padding;
+            }
+            if (finalX - bRect.width / 2 < padding) {
+                finalX = bRect.width / 2 + padding;
+            }
+
+            // التأكد من عدم الخروج للأعلى
+            if (finalY - 150 < padding) {
+                finalY = y + 150; // تظهر للأسفل إذا لم توجد مساحة للأعلى
+                b.style.transform = 'translate(-50%, 0) scale(0.5)';
+            }
+
+            b.style.left = finalX + 'px';
+            b.style.top = finalY + 'px';
+
+            // تفعيل الأنيميشن
+            setTimeout(() => b.classList.add('active'), 50);
+
+            // الحذف
+            setTimeout(() => {
+                b.classList.remove('active');
+                setTimeout(() => b.remove(), 600);
+            }, 3000);
+        }
+
+        // تفاعلات المناطق
+        function onFlowersClick(e) {
+            const q = flowerQuotes[Math.floor(Math.random() * flowerQuotes.length)];
+            spawnBubble(q, e.clientX, e.clientY);
+        }
+
+        function onHorseClick(e) {
+            // طلبك الخاص: رسالة الحصان
+            spawnBubble("راح نجيبلك واحد كيف ذا ان شاء الله 🐎✨", e.clientX, e.clientY);
+        }
+
+        function onMoonClick(e) {
+            if(state.isNight) spawnBubble("هذي نتي ختيتي🌙✨", e.clientX, e.clientY);
+        }
+
+        // التحكم في الوقت
+        function toggleCycle() {
+            state.isNight = !state.isNight;
+            const nightL = document.getElementById('night-view');
+            const icon = document.getElementById('cycle-icon');
+            const moonZ = document.getElementById('moon-zone');
+
+            if(state.isNight) {
+                nightL.style.opacity = '1';
+                icon.innerText = '☀️';
+                moonZ.style.display = 'block';
+            } else {
+                nightL.style.opacity = '0';
+                icon.innerText = '🌙';
+                moonZ.style.display = 'none';
+            }
+            spawnParticles();
+        }
+
+        // الموسيقى
+        function handleMusicToggle() {
+            const btn = document.getElementById('music-master-btn');
+            if(bgAudio.paused) {
+                spAudio.pause();
+                bgAudio.play();
+                btn.innerText = '⏸️';
+            } else {
+                bgAudio.pause();
+                btn.innerText = '🌸';
+            }
+        }
+
+        function playIkramoSong() {
+            bgAudio.pause();
+            document.getElementById('music-master-btn').innerText = '🌸';
+            spAudio.currentTime = 0;
+            spAudio.play();
+            spawnBubble("   تشغيل.. 🎶", window.innerWidth/2, window.innerHeight/2);
+        }
+
+        // نظام كلمة السر
+        function showPassModal() {
+            document.getElementById('pass-modal').classList.add('visible');
+        }
+
+        function validateSecret() {
+            const input = document.getElementById('pass-input').value;
+            // كلمة السر الأصلية
+            if(input === "Together forever") {
+                hideModals();
+                setTimeout(() => {
+                    document.getElementById('message-modal').classList.add('visible');
+                }, 500);
+            } else {
+                alert("كلمة السر خاطئة يا حبوبة.. جربي مرة أخرى 🌸");
+            }
+        }
+
+        function hideModals() {
+            document.querySelectorAll('.modal-container').forEach(m => m.classList.remove('visible'));
+        }
+
+        // نظام الجسيمات
+        let pInterval;
+        function spawnParticles() {
+            const container = document.getElementById('particle-field');
+            if(pInterval) clearInterval(pInterval);
+            container.innerHTML = '';
+
+            pInterval = setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'particle ' + (state.isNight ? 'firefly-shape' : 'petal-shape');
+                
+                const startX = Math.random() * 100;
+                p.style.left = startX + 'vw';
+                
+                if(!state.isNight) {
+                    const size = Math.random() * 15 + 10;
+                    p.style.width = size + 'px';
+                    p.style.height = size + 'px';
+                    p.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                } else {
+                    p.style.top = Math.random() * 80 + 'vh';
+                    p.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                }
+
+                container.appendChild(p);
+                setTimeout(() => p.remove(), 8000);
+            }, state.isNight ? 800 : 400);
+        }
+
+        // حماية من الإغلاق بالخطأ
+        window.onbeforeunload = function() {
+            return "هل تريدين مغادرة عالمك الخاص؟";
+        };
+
+    </script>
+</body>
+</html>
